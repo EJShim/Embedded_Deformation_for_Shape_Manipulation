@@ -7,7 +7,7 @@
 using namespace cv;
 #endif
 
-typedef double Node[3];
+typedef double MeshNode[3];
 typedef double Rotation[9];
 typedef double Translation[3];
 
@@ -16,9 +16,9 @@ class DeformationGraph{
 public:
 	DeformationGraph();
 	//create a deformation graph according to nodes data, mesh vertices data and k
-	DeformationGraph(int n_nodes, Node *nodes, int n_vertices, double **vertices, int k);
+    DeformationGraph(int n_nodes, std::vector<std::vector<double> > nodes, int n_vertices, double **vertices, int k);
 	//input nodes and edges data to create a deformation graph
-	DeformationGraph(int n_nodes, Node *nodes, int n_edges, bool **edges);
+    DeformationGraph(int n_nodes, std::vector<std::vector<double> > nodes, int n_edges, bool **edges);
 	
 	~DeformationGraph();
 
@@ -43,7 +43,7 @@ public:
 	//if the number of nodes of deformation graph is 0, the output will be (0,0,0)
 	void predict(const double *v, double *_v) const;
 
-	double Erot();  //compute the rotation error
+    double Erot();  //compute the rotation error
 	double Ereg();  //compute the regularization error
 	double Econ(const int p, double **v, double **q);  //compute the constraints error
 
@@ -52,11 +52,14 @@ public:
 	friend double F(DeformationGraph &dg, Mat &x, int p, double **v, double **q);   //x is used to update dg
 	friend void gaussNewton(DeformationGraph &dg, int p, double **v, double **q);
 
+    void print();
+    void predictAll(int n_vertices, double** inputVertices, double** outputVertices);
+
 private:
 	int n_nodes;         //number of nodes
 	int n_edges;         //number of edges
 	int k_nearest;       //number of k (k-nearest nodes)
-	Node *nodes;         //nodes array
+    MeshNode *nodes;         //nodes array
 	bool **edges;        //edges, a adjacency matrix, n_nodes * n_nodes dimensions
 	Rotation *rot;       //rotation matrixes
 	Translation *trans;  //translation vectors
